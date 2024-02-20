@@ -1,7 +1,7 @@
 name: cyfl_oem_app
-description: A new Flutter package project.
+description: oem app
 version: 0.0.1
-homepage:
+homepage: https://www.solarpilot.com/
 
 environment:
   sdk: '>=2.19.6 <3.0.0'

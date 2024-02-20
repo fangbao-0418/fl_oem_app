@@ -1,18 +1,15 @@
 import 'dart:async';
 
 import 'package:args/command_runner.dart';
+import 'package:cyfl_oem_app/platform_file_editors/abs_platform_file_editor.dart';
 import '../cyfl_oem_app.dart';
 import '../enums.dart';
 
-/// [CyflCommandRunner] is responsible for running the rename command in the CLI tool.
-/// It extends the CommandRunner class and overrides some of its methods.
 class CyflCommandRunner extends CommandRunner<void> {
-  /// Constructor for [CyflCommandRunner].
-  /// It initializes the super class with the name of the command and its description.
   CyflCommandRunner()
       : super(
-          'oem',
-          'A CLI tool that helps for renaming in Flutter projects.',
+          'cy_oem',
+          'A CLI tool that helps for oem in Flutter projects.',
         ) {
     argParser.addFlag(
       'version',
@@ -74,11 +71,11 @@ class RunCommand extends SetPlatformFileEditorCommand {
   RunCommand()
       : super(
           'run',
-          'Set app name for the targeted platforms',
+          'oem app for the targeted platforms',
         );
 
   @override
-  String get description => 'Set app name for the targeted platforms';
+  String get description => 'oem app for the targeted platforms';
 
   @override
   String get name => 'run';
@@ -86,24 +83,22 @@ class RunCommand extends SetPlatformFileEditorCommand {
   @override
   FutureOr? run() {
     final targets = argResults?[CyflOemOption.targets.name];
-    // final value = argResults?[CyflOemOption.value.name];
+
+    String? appId = argResults?.arguments.last;
+
     if (targets == null || targets.isEmpty) {
-      print('No targets specified.');
+      logger.i('No targets specified.');
       return null;
     }
-    // if (value == null || value.isEmpty) {
-    //   print('value required for $name command.');
-    //   return null;
-    // }
 
-    print('Targets: $targets');
-    // print('Value: $value');
-    final rename = CyflOemApp.fromPlatformNames(
+    if (appId == null) {
+      logger.i('No appId specified.');
+      return null;
+    }
+
+    CyflOemApp.replace(
       platformNames: targets,
+      appId: appId,
     );
-    // return rename.applyWithCommandName(
-    //   commandName: name,
-    //   value: value,
-    // );
   }
 }

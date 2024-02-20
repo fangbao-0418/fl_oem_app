@@ -1,9 +1,13 @@
 import 'dart:io';
 
 import 'package:path/path.dart';
-
+import 'package:logger/logger.dart';
 import '../custom_exceptions.dart';
 import '../enums.dart';
+
+final Logger logger = Logger(
+  filter: ProductionFilter(),
+);
 
 abstract class AbstractPlatformFileEditor {
   final CyflPlatform platform;
@@ -70,6 +74,23 @@ abstract class AbstractPlatformFileEditor {
     return true;
   }
 
+  Future<Map<String, String>> getMetadata(String appId) async {
+    String configFilePath = AbstractPlatformFileEditor.convertPath(
+        ['oem-datum', appId, 'config.ini']);
+    List<String?> content =
+        await readFileAsLineByline(filePath: configFilePath);
+    Map<String, String> obj = {};
+    if (content.isNotEmpty) {
+      for (String? e in content) {
+        List<String>? rows = e?.split("=");
+        if ((rows?.length ?? 0) == 2) {
+          obj[rows![0]] = rows[1];
+        }
+      }
+    }
+    return obj;
+  }
+
   /// Converts a list of path segments into a platform-specific file path.
   /// Parameters:
   /// - `paths`: A list of path segments.
@@ -84,7 +105,7 @@ abstract class AbstractPlatformFileEditor {
 
   /// Fetches the name of the application.
   /// Returns: Future<String?>, the name of the application.
-  Future<String?> getAppName();
+  Future<String?> getAppName(String? path);
 
   /// Changes the Bundle ID of the application to the provided [bundleId].
   /// Parameters:
@@ -92,15 +113,20 @@ abstract class AbstractPlatformFileEditor {
   /// Returns: Future<String?>, a success message indicating the change in Bundle ID.
   Future<String?> setBundleId({required String bundleId}) async {
     var old = await getBundleId();
-    return 'rename has successfuly changed bundleId for ${platform.name.toUpperCase()}\n$old -> $bundleId';
+    return 'replace bundleId has successfuly\n$old -> $bundleId';
   }
 
   /// Changes the name of the application to the provided [appName].
   /// Parameters:
   /// - `appName`: The new name to be set for the application.
   /// Returns: Future<String?>, a success message indicating the change in application name.
-  Future<String?> setAppName({required String appName}) async {
-    var old = await getAppName();
-    return 'rename has successfuly changed appname for ${platform.name.toUpperCase()}\n$old -> $appName';
+  Future<String?> setAppName({
+    required String appName,
+    String? path,
+  }) async {
+    var old = await getAppName(path);
+    return 'rename has successfuly\n$old -> $appName';
   }
+
+  replaceFile(String appId);
 }
