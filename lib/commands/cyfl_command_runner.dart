@@ -18,6 +18,7 @@ class CyflCommandRunner extends CommandRunner<void> {
     );
 
     addCommand(RunCommand());
+    addCommand(CreateCommand());
   }
 }
 
@@ -66,8 +67,6 @@ abstract class SetPlatformFileEditorCommand extends PlatformFileEditorCommand {
 /// [RunCommand] is a class that extends the [SetPlatformFileEditorCommand] class.
 /// It is responsible for setting the app name for the targeted platforms.
 class RunCommand extends SetPlatformFileEditorCommand {
-  /// Constructor for [DefaultCommand].
-  /// It initializes the command with its name and description.
   RunCommand()
       : super(
           'run',
@@ -98,6 +97,37 @@ class RunCommand extends SetPlatformFileEditorCommand {
 
     CyflOemApp.replace(
       platformNames: targets,
+      appId: appId,
+    );
+  }
+}
+
+/// [CreateCommand] is a class that extends the [SetPlatformFileEditorCommand] class.
+/// It is responsible for setting the app name for the targeted platforms.
+class CreateCommand extends SetPlatformFileEditorCommand {
+  CreateCommand()
+      : super(
+          'create',
+          'generate the lib/oem_info.dart file from config.ini',
+        );
+
+  @override
+  String get description =>
+      'generate the lib/oem_info.dart file from config.ini';
+
+  @override
+  String get name => 'create';
+
+  @override
+  FutureOr? run() {
+    String? appId = argResults?.arguments.last;
+
+    if (appId == null) {
+      logger.i('No appId specified.');
+      return null;
+    }
+
+    CyflOemApp.create(
       appId: appId,
     );
   }

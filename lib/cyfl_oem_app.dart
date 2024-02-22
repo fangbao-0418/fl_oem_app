@@ -32,4 +32,17 @@ class CyflOemApp {
       }
     }
   }
+
+  static create({
+    required String appId,
+  }) async {
+    AndroidPlatformFileEditor editor = AndroidPlatformFileEditor();
+    Map<String, String> obj = await editor.getMetadata(appId);
+    String content = "class OemInfo {\r";
+    obj.forEach((key, value) {
+      content += "    static String $key = \"$value\";\r";
+    });
+    content += "}";
+    editor.writeFile(filePath: "lib/oem_info.dart", content: content);
+  }
 }
