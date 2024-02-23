@@ -1,6 +1,6 @@
 ## Installation
 ```
-flutter pub global activate rename
+flutter pub global activate cyfl_oem_app
 ```
 
 ## Usage
