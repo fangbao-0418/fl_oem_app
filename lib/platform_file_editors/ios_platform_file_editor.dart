@@ -108,7 +108,7 @@ class IosPlatformFileEditor extends AbstractPlatformFileEditor {
       "29 1": "29x29",
       "29": "29x29",
       "40 1": "40x40",
-      "40 2": "80x80",
+      "40 2": "40x40",
       "40": "40x40",
       "58 1": "58x58",
       "58": "58x58",
