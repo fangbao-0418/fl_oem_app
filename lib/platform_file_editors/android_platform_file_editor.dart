@@ -8,6 +8,20 @@ class AndroidPlatformFileEditor extends AbstractPlatformFileEditor {
     ['android', 'app', 'src', 'main', 'AndroidManifest.xml'],
   );
 
+  final String pubspecPath = AbstractPlatformFileEditor.convertPath(
+    ['pubspec.yaml'],
+  );
+
+  final String androidDebugManifestPath =
+      AbstractPlatformFileEditor.convertPath(
+    ['android', 'app', 'src', 'debug', 'AndroidManifest.xml'],
+  );
+
+  final String androidProfileManifestPath =
+      AbstractPlatformFileEditor.convertPath(
+    ['android', 'app', 'src', 'profile', 'AndroidManifest.xml'],
+  );
+
   final String androidValuesStringsPath =
       AbstractPlatformFileEditor.convertPath(
     ['android', 'app', 'src', 'main', 'res', 'values', 'strings.xml'],
@@ -133,8 +147,17 @@ class AndroidPlatformFileEditor extends AbstractPlatformFileEditor {
       content: mainActivityContentLineByLine.join('\n'),
     );
 
+    await writeManifestBundleId(androidManifestPath, bundleId);
+    await writeManifestBundleId(androidDebugManifestPath, bundleId);
+    await writeManifestBundleId(androidProfileManifestPath, bundleId);
+
+    logger.i(message);
+    return message;
+  }
+
+  Future<void> writeManifestBundleId(String filePath, String bundleId) async {
     List? androidManifestContentLineByLine = await readFileAsLineByline(
-      filePath: androidManifestPath,
+      filePath: filePath,
     );
     for (var i = 0; i < androidManifestContentLineByLine.length; i++) {
       if (androidManifestContentLineByLine[i].contains('package="')) {
@@ -145,11 +168,9 @@ class AndroidPlatformFileEditor extends AbstractPlatformFileEditor {
       }
     }
     await writeFile(
-      filePath: androidManifestPath,
+      filePath: filePath,
       content: androidManifestContentLineByLine.join('\n'),
     );
-    logger.i(message);
-    return message;
   }
 
   Future<String?> setSingature({
@@ -242,6 +263,24 @@ class AndroidPlatformFileEditor extends AbstractPlatformFileEditor {
     logger.i("replace logo has successfully");
   }
 
+  replaceVersion(String version) async {
+    List? pubspecContentLineByLine = await readFileAsLineByline(
+      filePath: pubspecPath,
+    );
+    for (var i = 0; i < pubspecContentLineByLine.length; i++) {
+      if (pubspecContentLineByLine[i].contains('version: ')) {
+        pubspecContentLineByLine[i] = "version: $version";
+
+        break;
+      }
+    }
+    await writeFile(
+      filePath: pubspecPath,
+      content: pubspecContentLineByLine.join('\n'),
+    );
+    logger.i("replace version has successfully");
+  }
+
   @override
   replaceFile(String appId) async {
     logger.i("start replacing for ${platform.name} ");
@@ -260,6 +299,7 @@ class AndroidPlatformFileEditor extends AbstractPlatformFileEditor {
       }
 
       await setBundleId(bundleId: obj["APP_ID"]!);
+      await replaceVersion(obj["APP_VERSION"]!);
       await replaceAppMainAndroidMainfest(obj["GOOGLE_GEO_API_KEY"]!);
       await replaceLogo(appId);
       await setSingature(
