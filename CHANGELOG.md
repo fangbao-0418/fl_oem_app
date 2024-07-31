@@ -1,3 +1,6 @@
+### 0.0.6
+* support change launch image
+
 ### 0.0.5
 * support change version
 

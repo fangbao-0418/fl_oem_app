@@ -263,6 +263,19 @@ class AndroidPlatformFileEditor extends AbstractPlatformFileEditor {
     logger.i("replace logo has successfully");
   }
 
+  replaceLaunchImage(String appId) async {
+    String path = AbstractPlatformFileEditor.convertPath(
+        ['oem-datum', appId, 'launch_image.png']);
+    String distPath = AbstractPlatformFileEditor.convertPath([
+      'assets',
+      'images',
+      'boot_page',
+      "launch_image.png",
+    ]);
+    await File(path).copy(distPath);
+    logger.i("replace launch image has successfully");
+  }
+
   replaceVersion(String version) async {
     List? pubspecContentLineByLine = await readFileAsLineByline(
       filePath: pubspecPath,
@@ -308,6 +321,7 @@ class AndroidPlatformFileEditor extends AbstractPlatformFileEditor {
         keyPassword: obj["KEY_PASSWORD"],
         storePassword: obj["STORE_PASSWORD"],
       );
+      await replaceLaunchImage(appId);
     }
   }
 }

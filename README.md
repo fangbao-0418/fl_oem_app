@@ -41,6 +41,7 @@ oem-info
    └─ singature
    │  └─ upload-keystore.jks
    ├─ config.ini
+   ├─ launch_image.png
    └─ logo
       ├─ 20x20.png
       ├─ 29x29.png

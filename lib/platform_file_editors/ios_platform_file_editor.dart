@@ -82,6 +82,19 @@ class IosPlatformFileEditor extends AbstractPlatformFileEditor {
     return message;
   }
 
+  replaceLaunchImage(String appId) async {
+    String path = AbstractPlatformFileEditor.convertPath(
+        ['oem-datum', appId, 'launch_image.png']);
+    String distPath = AbstractPlatformFileEditor.convertPath([
+      'assets',
+      'images',
+      'boot_page',
+      "launch_image.png",
+    ]);
+    await File(path).copy(distPath);
+    logger.i("replace launch image has successfully");
+  }
+
   @override
   Future<String?> setBundleId({required String bundleId}) async {
     final filePath = iosProjectPbxprojPath;
@@ -163,6 +176,7 @@ class IosPlatformFileEditor extends AbstractPlatformFileEditor {
 
       await setBundleId(bundleId: obj["APP_ID"]!);
       await replaceLogo(appId);
+      await replaceLaunchImage(appId);
     }
   }
 }
